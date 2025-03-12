@@ -1,10 +1,7 @@
+import Form from "../components/Form";
 function Register(){
-    return (
-        <div>
-            <h1>Register</h1>
-            <p>This is a protected route</p>   
-        </div>
-    );
+    return <Form route="/api/user/register/" method="register" />
+
 }
 
 export default Register;
