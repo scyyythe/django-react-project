@@ -112,8 +112,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+# AUTHENTICATION_BACKENDS = [
+#     'mongoengine.django.auth.MongoEngineBackend'
+# ]
 AUTHENTICATION_BACKENDS = [
-    'mongoengine.django.auth.MongoEngineBackend'
+    'api.authentication.MongoEngineBackend',  # Custom MongoDB authentication
 ]
 
 # Database

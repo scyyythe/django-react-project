@@ -1,7 +1,6 @@
-from mongoengine import Document, StringField, IntField, ImageField, DateTimeField, ReferenceField, EmailField
+from mongoengine import Document, StringField, DateTimeField, EmailField,ObjectIdField
 import bcrypt
 from datetime import datetime
-
 
 class User(Document):
     username = StringField(max_length=150, unique=True, required=True)
@@ -21,23 +20,4 @@ class User(Document):
     def check_password(self, password):
         """Check password hash."""
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
-
-class Art(Document):
-    title = StringField(max_length=100)
-    artist = ReferenceField(User) 
-    category = StringField(max_length=100)
-    art_status = StringField(max_length=100)
-    price = IntField()
-    description = StringField()
-    # image = ImageField(upload_to="artworks/") 
-    created_at = DateTimeField(default=datetime.utcnow)
-    updated_at = DateTimeField(default=datetime.utcnow)
-
-
-    meta = {
-        'collection': 'artworks'  
-    }
-
-    def __str__(self):
-        return self.title
 
