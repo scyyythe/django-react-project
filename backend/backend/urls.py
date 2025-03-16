@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from api.views.user_views import CreateUserView, CustomTokenObtainPairView, CustomTokenRefreshView
-from api.views.artwork_views import ArtCreateView
+
 
 from django.http import JsonResponse
 

@@ -72,21 +72,25 @@ class CustomTokenRefreshView(APIView):
             
             if not user:
                 return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            def generate_token(payload, exp_delta):
+                payload.update({"exp": datetime.datetime.utcnow() + exp_delta, "iat": datetime.datetime.utcnow()})
+                return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 
             # Create a new access token
-            access_token = jwt.encode({
-                "user_id": str(user.id),
-                "username": user.username,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
-                "iat": datetime.datetime.utcnow()
-            }, settings.SECRET_KEY, algorithm="HS256")
+            access_token = generate_token({
+            "user_id": str(user.id), 
+            "username": user.username, 
+            "jti": f"{user.id}_access",
+            "token_type": "access"
+            }, datetime.timedelta(hours=1))
 
             # Create a new refresh token
-            refresh_token = jwt.encode({
-                "user_id": str(user.id),
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(days=7),
-                "iat": datetime.datetime.utcnow()
-            }, settings.SECRET_KEY, algorithm="HS256")
+            refresh_token = generate_token({
+            "user_id": str(user.id), 
+            "jti": f"{user.id}_refresh",
+            "token_type": "refresh"
+             }, datetime.timedelta(days=7))
 
             # Return both tokens, along with user info
             return Response({

@@ -1,40 +1,25 @@
-from rest_framework import generics
-from api.models.artwork import  Art
+
+from rest_framework import  generics
+from rest_framework.permissions import AllowAny
+from api.models.artwork import Art
 from api.serializers.artwork_serializers import ArtSerializer 
 from rest_framework.permissions import IsAuthenticated
-from bson import ObjectId
-from api.models.users import User
+from rest_framework.response import Response
 
 class ArtCreateView(generics.ListCreateAPIView):
-    queryset = Art.objects
-    permission_classes=[IsAuthenticated]
+    queryset = Art.objects.all()
+    permission_classes = [AllowAny]
     serializer_class = ArtSerializer
-    
-    def get_queryset(self):
-        user = User.objects(id=self.request.user.id).first()
+
+    def create(self, request, *args, **kwargs):
+        print("DEBUG: Incoming Request Data =", request.data)  # Log request data
+        print("DEBUG: User =", request.user)  # Log user details
         
-        print(f"Filtering artworks for user: {user.id} (Type: {type(user.id)})")  # Debugging
-
-        if not user:
-            return Art.objects.none()  # Return empty queryset if user not found
-
-        return Art.objects.filter(artist=user)  # Use User object, not ObjectId
-   
-    
-    def perform_create(self, serializer):
-        print(f"User ID Type Before Query: {type(self.request.user.id)}")  # Debugging
+        response = super().create(request, *args, **kwargs)
         
-        user = User.objects(id=self.request.user.id).first()  # Use MongoEngine query
+        print("DEBUG: Response Data =", response.data)  # Log response data
+        return response
 
-        if not user:
-            raise ValueError(f"User not found: {self.request.user.id}")  # Debugging
-
-        print(f"User Found: {user.id} (Type: {type(user.id)})")  # Debugging
-
-        if serializer.is_valid():
-            serializer.save(artist=user)  # Save User object, not ObjectId
-        else:
-            print(serializer.errors)
 
             
 class ArtDelete(generics.DestroyAPIView):

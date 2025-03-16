@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import sys
 from mongoengine import connect
+from django.conf import settings
 
 load_dotenv()
 
@@ -41,19 +42,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-# REST_FRAMEWORK = {
-#      "DEFAULT_AUTHENTICATION_CLASSES": (
-#          "rest_framework_simplejwt.authentication.JWTAuthentication",
-#      ),
-#      "DEFAULT_PERMISSION_CLASSES": [
-#          "rest_framework.permissions.IsAuthenticated",
-#      ],
-#  }
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+       
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',  # Ensure this allows login
@@ -63,6 +58,9 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
      "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
      "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+     'USER_ID_FIELD': '_id',  # Use MongoDB's ObjectId
+    'USER_ID_CLAIM': 'user_id',
+     
  }
 
 # Application definition
@@ -169,7 +167,7 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
