@@ -11,7 +11,6 @@ class MongoJWTAuthentication(JWTAuthentication):
         if user_id is None:
             return None
         
-        # Convert the string user_id to an ObjectId and look up the user.
         try:
             mongo_user = User.objects.get(id=ObjectId(user_id))
         except Exception:

@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from api.models.users import User
 from api.serializers.users_serializers import UserSerializer 
+from api.permissions import IsAdminOrOwner 
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -22,7 +23,7 @@ class RetrieveUserView(generics.RetrieveAPIView):
 class UpdateUserView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrOwner]
 
 class DeleteUserView(generics.DestroyAPIView):
     queryset = User.objects.all()

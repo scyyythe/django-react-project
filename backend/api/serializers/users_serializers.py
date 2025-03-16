@@ -15,55 +15,62 @@ class UserSerializer(serializers.Serializer):
     updated_at = serializers.DateTimeField(read_only=True)
 
     def validate_username(self, value):
+        
+        if self.instance and self.instance.username == value:
+            return value
+        
         if User.objects(username=value).first():
             raise serializers.ValidationError("This username is already taken.")
         return value
 
+    
     def validate_email(self, value):
+
+        if self.instance and self.instance.email == value:
+            return value
+        
         if User.objects(email=value).first():
             raise serializers.ValidationError("This email is already registered.")
+        
         return value
 
     def create(self, validated_data):
-        
-        role = validated_data.get("role", "User")  
-        user_status = validated_data.get("user_status", "Active") 
+        role = validated_data.get("role", "User")
+        user_status = validated_data.get("user_status", "Active")
 
         created_at = validated_data.get("created_at", datetime.utcnow())
         updated_at = validated_data.get("updated_at", datetime.utcnow())
 
-        # Create the user instance and pass the explicit created_at and updated_at
         user = User(
             username=validated_data["username"],
             email=validated_data["email"],
             first_name=validated_data.get("first_name", ""),
             last_name=validated_data.get("last_name", ""),
-            role=role, 
-            user_status=user_status, 
-            created_at=created_at,  
-            updated_at=updated_at, 
+            role=role,
+            user_status=user_status,
+            created_at=created_at,
+            updated_at=updated_at,
         )
-        user.set_password(validated_data["password"])  
+        user.set_password(validated_data["password"])
         user.save()
         return user
 
-    # update
-    def update(self,instance, validated_data):
-        instance.username=validated_data.get("username", instance.username)
-        instance.email=validated_data.get("email", instance.email)
-        instance.first_name=validated_data.get("first_name", instance.first_name)
-        instance.last_name=validated_data.get("last_name", instance.last_name)
+    # Update user
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get("username", instance.username)
+        instance.email = validated_data.get("email", instance.email)
+        instance.first_name = validated_data.get("first_name", instance.first_name)
+        instance.last_name = validated_data.get("last_name", instance.last_name)
         instance.role = validated_data.get("role", instance.role)
         instance.user_status = validated_data.get("user_status", instance.user_status)
-        instance.updated_at = datetime.utcnow()  
-        
+        instance.updated_at = datetime.utcnow()
+
         if "password" in validated_data:
             instance.set_password(validated_data["password"])
         instance.save()
         return instance
-    
-    
-    # representation
+
+    # Convert to JSON format for the response
     def to_representation(self, instance):
         return {
             "id": str(instance.id),
