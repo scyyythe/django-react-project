@@ -18,7 +18,7 @@ class CreateUserView(generics.CreateAPIView):
 # Custom JWT Token 
 class CustomTokenObtainPairView(APIView):
     """Handles JWT authentication for MongoEngine users"""
-
+    permission_classes = [AllowAny] 
     def post(self, request):
         username, password = request.data.get("username"), request.data.get("password").encode("utf-8")
 

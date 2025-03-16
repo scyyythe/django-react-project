@@ -1,11 +1,11 @@
-from rest_framework import serializers
-from api.models.artwork import User, Art
 from bson import ObjectId
+from rest_framework import serializers
+from api.models.artwork import Art
 
 class ArtSerializer(serializers.Serializer):
     id = serializers.CharField(read_only=True)
     title = serializers.CharField(max_length=100)
-    artist = serializers.CharField()  # Expecting an ObjectId
+    artist = serializers.CharField(read_only=True)  # Read-only; set automatically in the view
     category = serializers.CharField(max_length=100)
     art_status = serializers.CharField(max_length=100)
     price = serializers.IntegerField()
@@ -14,22 +14,7 @@ class ArtSerializer(serializers.Serializer):
     updated_at = serializers.DateTimeField(read_only=True)
 
     def create(self, validated_data):
-        """ Convert artist ID to ObjectId before saving """
-
-      
-        artist_id = validated_data.get("artist")
-
-        # Validate artist ID
-        if not ObjectId.is_valid(artist_id):
-            raise serializers.ValidationError({"artist": "Invalid artist ID format"})
-
-        validated_data["artist"] = ObjectId(artist_id)  
-
-      
-
+        # Do not attempt to convert the artist here.
         art = Art(**validated_data)
         art.save()
-
-       
-
         return art

@@ -35,32 +35,42 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-gtf0y@$4m-u=t$b-&z8woymqzjq47-x=s5k)^#d=-v!+yqo(%^")
 
-SECRET_KEY = 'django-insecure-gtf0y@$4m-u=t$b-&z8woymqzjq47-x=s5k)^#d=-v!+yqo(%^'
+# SECRET_KEY = 'django-insecure-gtf0y@$4m-u=t$b-&z8woymqzjq47-x=s5k)^#d=-v!+yqo(%^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
+AUTHENTICATION_BACKENDS = (
+    'mongoengine.django.auth.MongoEngineBackend',
+)
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         # 'rest_framework.authentication.SessionAuthentication',
+#         # 'rest_framework.authentication.BasicAuthentication',
+#         "rest_framework_simplejwt.authentication.JWTAuthentication",
+       
+#     ),
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.AllowAny',
+#         # Ensure this allows login
+#     ),
+# }
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-       
+        'api.authentication.MongoJWTAuthentication',  # Use your custom class
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',  # Ensure this allows login
+        'rest_framework.permissions.IsAuthenticated',
+       
+        
     ),
 }
 
 SIMPLE_JWT = {
      "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
      "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-     'USER_ID_FIELD': '_id',  # Use MongoDB's ObjectId
-    'USER_ID_CLAIM': 'user_id',
-     
  }
 
 # Application definition
@@ -76,6 +86,7 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'rest_framework_simplejwt',
+    
 ]
 
 MIDDLEWARE = [
@@ -83,7 +94,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -110,22 +121,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+
+
 # AUTHENTICATION_BACKENDS = [
-#     'mongoengine.django.auth.MongoEngineBackend'
+#     'api.authentication.MongoEngineBackend',  # Custom MongoDB authentication
 # ]
-AUTHENTICATION_BACKENDS = [
-    'api.authentication.MongoEngineBackend',  # Custom MongoDB authentication
-]
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 # Password validation
@@ -167,7 +168,7 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True

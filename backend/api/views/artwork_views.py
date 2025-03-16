@@ -1,31 +1,22 @@
-
-from rest_framework import  generics
-from rest_framework.permissions import AllowAny
+from bson import ObjectId
+from rest_framework import generics, permissions
 from api.models.artwork import Art
-from api.serializers.artwork_serializers import ArtSerializer 
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from api.models.users import User
+from api.serializers.artwork_serializers import ArtSerializer
 
 class ArtCreateView(generics.ListCreateAPIView):
     queryset = Art.objects.all()
-    permission_classes = [AllowAny]
     serializer_class = ArtSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        print("DEBUG: Incoming Request Data =", request.data)  # Log request data
-        print("DEBUG: User =", request.user)  # Log user details
-        
-        response = super().create(request, *args, **kwargs)
-        
-        print("DEBUG: Response Data =", response.data)  # Log response data
-        return response
+    def perform_create(self, serializer):
+        # Debug print to see what request.user is:
+        print("DEBUG: request.user =", self.request.user, type(self.request.user))
+        try:
+            # Look up the MongoEngine user using the token's user id.
+            mongo_user = User.objects.get(id=ObjectId(self.request.user.id))
+        except Exception as e:
+            print("Error retrieving MongoEngine user:", e)
+            raise e
 
-
-            
-class ArtDelete(generics.DestroyAPIView):
-    serializer_class= ArtSerializer
-    permission_classes=[IsAuthenticated]
-    
-    def get_queryset(self):
-        user=self.request.user
-        return Art.objects.filter(artist=user) 
+        serializer.save(artist=mongo_user)

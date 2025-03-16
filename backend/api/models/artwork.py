@@ -1,6 +1,6 @@
-from mongoengine import Document, StringField, ReferenceField, FloatField, DateTimeField,IntField
+from mongoengine import Document, StringField, IntField, DateTimeField, ReferenceField
 from datetime import datetime
-from api.models.users import User  # Import the User model
+from .users import User  # Assuming User is a MongoEngine document
 
 class Art(Document):
     title = StringField(max_length=100)
@@ -8,11 +8,11 @@ class Art(Document):
     category = StringField(max_length=100)
     art_status = StringField(max_length=100)
     price = IntField()
-    description = StringField()
+    description = StringField(required=False)
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
 
-    meta = {'collection': 'artworks'}
+    meta = {'collection': 'art'}
 
     def save(self, *args, **kwargs):
         print("DEBUG: Saving Art Object =", self.to_json())  # Print before saving
