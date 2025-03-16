@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
 from .views.artwork_views import ArtCreateView, ArtListView,ArtUpdateView, ArtDeleteView, ArtDetailView
 from .views.user_views import RetrieveUserView, UpdateUserView, DeleteUserView
+from api.views.interaction import CommentCreateView, LikeCreateView
 
 urlpatterns = [
     # user urls
@@ -15,4 +15,8 @@ urlpatterns = [
     path('art/<str:pk>/', ArtDetailView.as_view(), name='detail_art'),
     path('art/<str:pk>/update/', ArtUpdateView.as_view(), name='update_art'),
     path('art/<str:pk>/delete/', ArtDeleteView.as_view(), name='delete_art'),
+    
+    # interactions
+    path('comments/', CommentCreateView.as_view(), name='comment-create'),
+    path('likes/', LikeCreateView.as_view(), name='like-create'),
 ]

@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, IntField, DateTimeField, ReferenceField
+from mongoengine import Document, StringField, IntField, DateTimeField, ReferenceField,EmbeddedDocument
 from datetime import datetime
 from .users import User  # Assuming User is a MongoEngine document
 
@@ -18,3 +18,10 @@ class Art(Document):
         print("DEBUG: Saving Art Object =", self.to_json())  # Print before saving
         super().save(*args, **kwargs)
         print("DEBUG: Art Saved Successfully")  # Confirm save
+        
+class Comment(Document):
+    user = ReferenceField(User)
+    content = StringField()
+    created_at = DateTimeField(default=datetime.utcnow)
+
+    meta = {'collection': 'comments'}

@@ -2,6 +2,9 @@ from bson import ObjectId
 from rest_framework import serializers
 from api.models.artwork import Art
 from datetime import datetime
+from api.models.users import User  # For artist reference
+from api.models.interaction import Comment,Like
+ # For referencing likes
 
 class ArtSerializer(serializers.Serializer):
     id = serializers.CharField(read_only=True)
@@ -14,13 +17,23 @@ class ArtSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
 
+    # Add the comments and likes relationships to show related data
+    comments = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+
+    def get_comments(self, obj):
+        comments = Comment.objects.filter(art=obj)
+        return [{"id": str(comment.id), "content": comment.content, "user": str(comment.user.id), "created_at": comment.created_at} for comment in comments]
+
+    def get_likes_count(self, obj):
+        return Like.objects.filter(art=obj).count()
+
     def create(self, validated_data):
         # Do not attempt to convert the artist here.
         art = Art(**validated_data)
         art.save()
         return art
     
-    # update art
     def update(self, instance, validated_data):
         # Update the fields that are passed in the request
         instance.title = validated_data.get("title", instance.title)
@@ -33,7 +46,6 @@ class ArtSerializer(serializers.Serializer):
         return instance
     
     def to_representation(self, instance):
-    
         return {
             "id": str(instance.id),
             "title": instance.title,
@@ -44,4 +56,6 @@ class ArtSerializer(serializers.Serializer):
             "description": instance.description,
             "created_at": instance.created_at,
             "updated_at": instance.updated_at,
+            "comments": self.get_comments(instance),
+            "likes_count": self.get_likes_count(instance)
         }
