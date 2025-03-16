@@ -1,6 +1,7 @@
 from django.urls import path
 from .views.artwork_views import ArtCreateView, ArtListView,ArtUpdateView, ArtDeleteView, ArtDetailView
 from .views.user_views import RetrieveUserView, UpdateUserView, DeleteUserView
+from .views.filter import ArtSearchAndFilterView
 from api.views.interaction import CommentCreateView, LikeCreateView
 
 urlpatterns = [
@@ -19,4 +20,7 @@ urlpatterns = [
     # interactions
     path('comments/', CommentCreateView.as_view(), name='comment-create'),
     path('likes/', LikeCreateView.as_view(), name='like-create'),
+    
+    # search/filter
+    path('artworks/search/', ArtSearchAndFilterView.as_view(), name='artwork_search_filter'),
 ]

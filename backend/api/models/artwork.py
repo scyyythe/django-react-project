@@ -19,9 +19,3 @@ class Art(Document):
         super().save(*args, **kwargs)
         print("DEBUG: Art Saved Successfully")  # Confirm save
         
-class Comment(Document):
-    user = ReferenceField(User)
-    content = StringField()
-    created_at = DateTimeField(default=datetime.utcnow)
-
-    meta = {'collection': 'comments'}

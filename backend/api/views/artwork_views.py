@@ -46,3 +46,4 @@ class ArtDeleteView(generics.DestroyAPIView):
     queryset = Art.objects.all()
     serializer_class = ArtSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    
