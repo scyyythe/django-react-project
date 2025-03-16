@@ -47,8 +47,24 @@ class UserSerializer(serializers.Serializer):
         user.save()
         return user
 
+    # update
+    def update(self,instance, validated_data):
+        instance.username=validated_data.get("username", instance.username)
+        instance.email=validated_data.get("email", instance.email)
+        instance.first_name=validated_data.get("first_name", instance.first_name)
+        instance.last_name=validated_data.get("last_name", instance.last_name)
+        instance.role = validated_data.get("role", instance.role)
+        instance.user_status = validated_data.get("user_status", instance.user_status)
+        instance.updated_at = datetime.utcnow()  
+        
+        if "password" in validated_data:
+            instance.set_password(validated_data["password"])
+        instance.save()
+        return instance
+    
+    
+    # representation
     def to_representation(self, instance):
-        """ Convert user instance to dictionary format """
         return {
             "id": str(instance.id),
             "username": instance.username,
@@ -60,4 +76,3 @@ class UserSerializer(serializers.Serializer):
             "created_at": instance.created_at,
             "updated_at": instance.updated_at
         }
-

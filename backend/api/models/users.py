@@ -14,19 +14,15 @@ class User(Document):
     updated_at = DateTimeField(default=datetime.utcnow)
 
     def set_password(self, password):
-        """Hash and set password."""
-        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     def check_password(self, password):
-        """Check password hash."""
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 
     @property
     def is_authenticated(self):
-        # Always return True for authenticated user instances.
         return True
 
     @property
     def is_anonymous(self):
-        # If needed, you can also define is_anonymous.
         return False
