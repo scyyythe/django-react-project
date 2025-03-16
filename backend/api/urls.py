@@ -2,7 +2,7 @@ from django.urls import path
 from .views.artwork_views import ArtCreateView, ArtListView,ArtUpdateView, ArtDeleteView, ArtDetailView
 from .views.user_views import RetrieveUserView, UpdateUserView, DeleteUserView
 from .views.filter import ArtSearchAndFilterView
-from api.views.interaction import CommentCreateView, LikeCreateView
+from api.views.interaction import CommentCreateView, LikeCreateView, CartItemCreateView, CartItemDeleteView,CartRetrieveView
 
 urlpatterns = [
     # user urls
@@ -23,4 +23,10 @@ urlpatterns = [
     
     # search/filter
     path('artworks/search/', ArtSearchAndFilterView.as_view(), name='artwork_search_filter'),
+    
+    # cart
+    path('artworks/cart/', CartItemCreateView.as_view(), name='cart_item_create'),
+    path('artworks/cart/owned/', CartRetrieveView.as_view(), name='retrieve_cart'),
+    path('artworks/cart/remove/', CartItemDeleteView.as_view(), name='cart_item_remove'),
+    
 ]

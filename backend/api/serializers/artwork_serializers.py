@@ -2,14 +2,14 @@ from bson import ObjectId
 from rest_framework import serializers
 from api.models.artwork import Art
 from datetime import datetime
-from api.models.users import User  # For artist reference
+from api.models.users import User  
 from api.models.interaction import Comment,Like
- # For referencing likes
+
 
 class ArtSerializer(serializers.Serializer):
     id = serializers.CharField(read_only=True)
     title = serializers.CharField(max_length=100)
-    artist = serializers.CharField(read_only=True)  # Read-only; set automatically in the view
+    artist = serializers.CharField(read_only=True)  
     category = serializers.CharField(max_length=100)
     art_status = serializers.CharField(max_length=100)
     price = serializers.IntegerField()
@@ -17,19 +17,30 @@ class ArtSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
 
-    # Add the comments and likes relationships to show related data
     comments = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
 
     def get_comments(self, obj):
         comments = Comment.objects.filter(art=obj)
-        return [{"id": str(comment.id), "content": comment.content, "user": str(comment.user.id), "created_at": comment.created_at} for comment in comments]
+        return [
+            {
+                "id": str(comment.id),
+                "content": comment.content,
+                "user": {
+                    "id": str(comment.user.id),
+                    "username": comment.user.username,
+                    "email": comment.user.email
+                },  # Include full user details
+                "created_at": comment.created_at
+            }
+            for comment in comments
+        ]
+
 
     def get_likes_count(self, obj):
         return Like.objects.filter(art=obj).count()
 
     def create(self, validated_data):
-        # Do not attempt to convert the artist here.
         art = Art(**validated_data)
         art.save()
         return art
