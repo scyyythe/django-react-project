@@ -30,7 +30,7 @@ class ArtSerializer(serializers.Serializer):
                     "id": str(comment.user.id),
                     "username": comment.user.username,
                     "email": comment.user.email
-                },  # Include full user details
+                },
                 "created_at": comment.created_at
             }
             for comment in comments
@@ -46,7 +46,7 @@ class ArtSerializer(serializers.Serializer):
         return art
     
     def update(self, instance, validated_data):
-        # Update the fields that are passed in the request
+      
         instance.title = validated_data.get("title", instance.title)
         instance.category = validated_data.get("category", instance.category)
         instance.art_status = validated_data.get("art_status", instance.art_status)
@@ -60,7 +60,7 @@ class ArtSerializer(serializers.Serializer):
         return {
             "id": str(instance.id),
             "title": instance.title,
-            "artist": str(instance.artist.id) if instance.artist else None,  # artist's id
+            "artist": str(instance.artist.id) if instance.artist else None,  # artists id
             "category": instance.category,
             "art_status": instance.art_status,
             "price": instance.price,

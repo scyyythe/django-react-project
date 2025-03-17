@@ -3,7 +3,8 @@ from .views.artwork_views import ArtCreateView, ArtListView,ArtUpdateView, ArtDe
 from .views.user_views import RetrieveUserView, UpdateUserView, DeleteUserView
 from .views.filter import ArtSearchAndFilterView
 from api.views.interaction import CommentCreateView, LikeCreateView, CartItemCreateView, CartItemDeleteView,CartRetrieveView
-
+from api.views.tip_views import TipCreateView, TipListView, TotalTipsView, TipReceivedListView
+from api.views.bid_views import PlaceBidView, BidHistoryView, AuctionListView, CloseAuctionView, ActiveAuctionsView, HighestBidView,CreateAuctionView
 urlpatterns = [
     # user urls
     path('user/<str:pk>/', RetrieveUserView.as_view(), name='retrieve_user'),
@@ -28,5 +29,25 @@ urlpatterns = [
     path('artworks/cart/', CartItemCreateView.as_view(), name='cart_item_create'),
     path('artworks/cart/owned/', CartRetrieveView.as_view(), name='retrieve_cart'),
     path('artworks/cart/remove/', CartItemDeleteView.as_view(), name='cart_item_remove'),
+    
+    # tips
+    path('tips/', TipListView.as_view(), name='all-tips'),  
+    path('tip/', TipCreateView.as_view(), name='create-tip'),  
+    path('tips/received/<str:username>/', TipReceivedListView.as_view(), name='tips-received'), 
+    path('tips/total/<str:username>/', TotalTipsView.as_view(), name='total-tips'),  
+    
+  # auctions
+    path('auction/', AuctionListView.as_view(), name='auction_list'),
+    path('auction/create/', CreateAuctionView.as_view(), name='create_auction'),
+    path('auction/active/', ActiveAuctionsView.as_view(), name='active_auctions'),
+    path('auction/close/<str:artwork_id>/', CloseAuctionView.as_view(), name='close_auction'),
+    
+    # bidding
+    path('bid/', PlaceBidView.as_view(), name='place_bid'),
+    path('bid/history/<str:artwork_id>/', BidHistoryView.as_view(), name='bid_history'),
+    path('auction/highest_bid/<str:artwork_id>/', HighestBidView.as_view(), name='highest_bid'),
+  
+    
+   
     
 ]
