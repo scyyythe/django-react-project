@@ -2,9 +2,11 @@ from bson import ObjectId
 from rest_framework import generics, permissions
 from api.models.artwork import Art
 from api.models.users import User
+from api.models.notification import Notification
 from api.serializers.artwork_serializers import ArtSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from datetime import datetime
+
 
 class ArtCreateView(generics.ListCreateAPIView):
     queryset = Art.objects.all()
@@ -18,32 +20,59 @@ class ArtCreateView(generics.ListCreateAPIView):
             print("Error retrieving MongoEngine user:", e)
             raise e
 
-        serializer.save(artist=mongo_user)
+        art = serializer.save(artist=mongo_user)
+
+
+        Notification(
+            user=mongo_user,
+            message=f"Your artwork '{art.title}' has been uploaded successfully.",
+            art=art
+        ).save()
+
+
 
 class ArtListView(generics.ListAPIView):
     queryset = Art.objects.all()
     serializer_class = ArtSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-# get specific
+
+
 class ArtDetailView(generics.RetrieveAPIView):
     queryset = Art.objects.all()
     serializer_class = ArtSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-# update art
+
+
 class ArtUpdateView(generics.UpdateAPIView):
     queryset = Art.objects.all()
     serializer_class = ArtSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_update(self, serializer):
-        # Optionally, update the artist or any other field
-        serializer.save(updated_at=datetime.utcnow())
+        art = serializer.save(updated_at=datetime.utcnow())
 
-# delete
+
+        Notification(
+            user=art.artist,
+            message=f"Your artwork '{art.title}' has been updated successfully.",
+            art=art
+        ).save()
+
+
 class ArtDeleteView(generics.DestroyAPIView):
     queryset = Art.objects.all()
     serializer_class = ArtSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
+
+    def perform_destroy(self, instance):
+        artist = instance.artist
+        title = instance.title
+        instance.delete()
+
+     
+        Notification(
+            user=artist,
+            message=f"Your artwork '{title}' has been deleted successfully."
+        ).save()

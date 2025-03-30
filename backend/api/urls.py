@@ -4,6 +4,8 @@ from .views.user_views import RetrieveUserView, UpdateUserView, DeleteUserView
 from .views.filter import ArtSearchAndFilterView
 from api.views.interaction import CommentCreateView, LikeCreateView, CartItemCreateView, CartItemDeleteView,CartRetrieveView
 from api.views.tip_views import TipCreateView, TipListView, TotalTipsView, TipReceivedListView
+from api.views.report_view import ReportCreateView, ReportStatusView, UserReportsView, ReportDeleteView,ReportUpdateView
+from api.views.admin_report import AdminUpdateReportStatusView, AdminReportsListView
 from api.views.bid_views import PlaceBidView, BidHistoryView, AuctionListView, CloseAuctionView, ActiveAuctionsView, HighestBidView,CreateAuctionView
 urlpatterns = [
     # user urls
@@ -47,7 +49,15 @@ urlpatterns = [
     path('bid/history/<str:artwork_id>/', BidHistoryView.as_view(), name='bid_history'),
     path('auction/highest_bid/<str:artwork_id>/', HighestBidView.as_view(), name='highest_bid'),
   
-    
-   
+    # user report
+    path('reports/create/', ReportCreateView.as_view(), name='report_create'),
+    path('reports/user/', UserReportsView.as_view(), name='user_reports'),
+    path('reports/pending/', AdminUpdateReportStatusView.as_view(), name='admin_pending_reports'),
+    path('reports/<str:pk>/', ReportStatusView.as_view(), name='report_status'),
+    path('reports/<str:pk>/delete/', ReportDeleteView.as_view(), name='report_delete'),
+    path('reports/<str:pk>/update/', ReportUpdateView.as_view(), name='report_update'),
+  # admin report
+   path('admin/reports/', AdminReportsListView.as_view(), name='admin_reports_list'),
+    path('admin/reports/<str:pk>/update/', AdminUpdateReportStatusView.as_view(), name='admin_update_report_status'),
     
 ]

@@ -1,10 +1,8 @@
-from bson import ObjectId
 from rest_framework import serializers
 from api.models.artwork import Art
 from datetime import datetime
-from api.models.users import User  
-from api.models.interaction import Comment,Like
-
+from api.models.interaction import Comment, Like
+from api.models.notification import Notification
 
 class ArtSerializer(serializers.Serializer):
     id = serializers.CharField(read_only=True)
@@ -14,6 +12,7 @@ class ArtSerializer(serializers.Serializer):
     art_status = serializers.CharField(max_length=100)
     price = serializers.IntegerField()
     description = serializers.CharField(required=False)
+    visibility = serializers.CharField(max_length=100, required=False, default="public")  # Fixed visibility
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
 
@@ -36,23 +35,30 @@ class ArtSerializer(serializers.Serializer):
             for comment in comments
         ]
 
-
     def get_likes_count(self, obj):
         return Like.objects.filter(art=obj).count()
 
     def create(self, validated_data):
+        if "visibility" not in validated_data:
+            validated_data["visibility"] = "public"  
         art = Art(**validated_data)
         art.save()
+        
+        Notification(
+            user=art.artist,
+            message=f"Your artwork '{art.title}' has been uploaded successfully.",
+            art=art
+        ).save()
         return art
     
     def update(self, instance, validated_data):
-      
         instance.title = validated_data.get("title", instance.title)
         instance.category = validated_data.get("category", instance.category)
         instance.art_status = validated_data.get("art_status", instance.art_status)
         instance.price = validated_data.get("price", instance.price)
         instance.description = validated_data.get("description", instance.description)
-        instance.updated_at = datetime.utcnow()  # Update the timestamp
+        instance.visibility = validated_data.get("visibility", instance.visibility) 
+        instance.updated_at = datetime.utcnow() 
         instance.save()
         return instance
     
@@ -60,11 +66,12 @@ class ArtSerializer(serializers.Serializer):
         return {
             "id": str(instance.id),
             "title": instance.title,
-            "artist": str(instance.artist.id) if instance.artist else None,  # artists id
+            "artist": str(instance.artist.id) if instance.artist else None, 
             "category": instance.category,
             "art_status": instance.art_status,
             "price": instance.price,
             "description": instance.description,
+            "visibility": instance.visibility, 
             "created_at": instance.created_at,
             "updated_at": instance.updated_at,
             "comments": self.get_comments(instance),
